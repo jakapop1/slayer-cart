@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Security: only this site's own files may run. No inline scripts, no third-party scripts,
+       no network calls except Google Fonts (styles + font files). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#0b0d1a">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A Demon Slayer–inspired shopping list and total tracker. Your data stays on your device.">
+  <title>Slayer Cart</title>
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Slayer Cart">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="petals" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="brand" href="#/list" aria-label="Slayer Cart home">
+      <span class="emblem" aria-hidden="true">滅</span>
+      <span class="brand-text">
+        <span class="title">Slayer Cart</span>
+        <span class="sub"><span lang="ja">鬼殺隊</span> · Supply Run Ledger</span>
+      </span>
+    </a>
+    <a class="privacy-pill" href="#/settings" title="Your data stays on this device">
+      <span class="kanji" aria-hidden="true">守</span> On-device
+    </a>
+  </header>
+  <div class="haori-strip" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <section class="summary" aria-label="Shopping totals">
+      <div class="stat">
+        <span class="label">In basket</span>
+        <output id="basketTotal" class="big" aria-live="polite">$0.00</output>
+        <span class="hint" id="basketHint">No items yet</span>
+      </div>
+      <div class="stat side">
+        <span class="label">Whole list</span>
+        <output id="listTotal" class="mid">$0.00</output>
+        <span class="hint"><span id="taxHint">before tax</span> · <a href="#/receipt" class="to-receipt">Itemize ›</a></span>
+      </div>
+      <div class="budget" id="budgetBox" hidden>
+        <div class="budget-head"><span class="label">Budget</span><span id="budgetText"></span></div>
+        <div class="meter"><div class="meter-ghost" id="budgetGhost"></div><div class="meter-fill" id="budgetFill"></div></div>
+        <p class="budget-note" id="budgetNote"></p>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Sections">
+      <button type="button" class="tab" data-view="list"><span class="kanji" aria-hidden="true">品</span><span>List</span></button>
+      <button type="button" class="tab" data-view="receipt"><span class="kanji" aria-hidden="true">計</span><span>Receipt</span></button>
+      <button type="button" class="tab" data-view="stores"><span class="kanji" aria-hidden="true">店</span><span>Stores</span></button>
+      <button type="button" class="tab" data-view="history"><span class="kanji" aria-hidden="true">記</span><span>History</span></button>
+      <button type="button" class="tab" data-view="settings"><span class="kanji" aria-hidden="true">設</span><span>Settings</span></button>
+    </nav>
+
+    <main>
+      <!-- LIST -->
+      <section class="view" id="view-list" aria-label="Shopping list">
+        <form class="card add-form" id="addForm" autocomplete="off">
+          <h2 class="card-title"><span class="kanji" aria-hidden="true">壱</span> Add an item</h2>
+          <div class="field f-name">
+            <label for="addName">Item</label>
+            <input id="addName" type="text" maxlength="60" placeholder="e.g. Rice 20 lb" list="itemSuggestions" required>
+            <datalist id="itemSuggestions"></datalist>
+          </div>
+          <div class="field f-price">
+            <label for="addPrice">Price each</label>
+            <input id="addPrice" type="number" inputmode="decimal" min="0" step="any" placeholder="0.00">
+          </div>
+          <div class="field f-qty">
+            <label for="addQty">Qty</label>
+            <div class="stepper">
+              <button type="button" data-step="-1" aria-label="Decrease quantity">−</button>
+              <input id="addQty" type="number" inputmode="numeric" min="1" max="999" step="1" value="1">
+              <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+          <div class="field f-store">
+            <label for="addStore">Store</label>
+            <select id="addStore"></select>
+          </div>
+          <button class="btn primary add-btn" type="submit"><span class="kanji" aria-hidden="true">斬</span> Add</button>
+          <div class="price-memory" id="priceMemory" hidden></div>
+        </form>
+
+        <div class="chips" id="storeFilter" role="group" aria-label="Filter by store"></div>
+
+        <div class="list-tools">
+          <label class="switch"><input type="checkbox" id="hideDone"><span>Hide checked</span></label>
+          <div class="tool-btns">
+            <button type="button" class="btn ghost small" id="uncheckAll">Uncheck all</button>
+            <button type="button" class="btn accent small" id="finishTrip">Finish trip</button>
+          </div>
+        </div>
+
+        <div id="itemGroups"></div>
+      </section>
+
+      <!-- RECEIPT -->
+      <section class="view" id="view-receipt" aria-label="Receipt" hidden>
+        <div class="receipt-controls">
+          <div class="seg" role="group" aria-label="Receipt detail">
+            <button type="button" data-detail="itemized">Itemized</button>
+            <button type="button" data-detail="summary">By store</button>
+          </div>
+          <div class="seg" role="group" aria-label="Which items">
+            <button type="button" data-scope="basket">In basket</button>
+            <button type="button" data-scope="all">Whole list</button>
+          </div>
+        </div>
+        <article class="receipt" id="receiptPaper"></article>
+        <div class="receipt-actions">
+          <button type="button" class="btn" id="copyReceipt">Copy as text</button>
+          <button type="button" class="btn" id="shareReceipt" hidden>Share</button>
+          <button type="button" class="btn ghost" id="printReceipt">Print</button>
+        </div>
+      </section>
+
+      <!-- STORES -->
+      <section class="view" id="view-stores" aria-label="Stores" hidden>
+        <form class="card" id="storeForm" autocomplete="off">
+          <h2 class="card-title"><span class="kanji" aria-hidden="true">店</span> Add a store</h2>
+          <div class="field">
+            <label for="storeName">Store name</label>
+            <input id="storeName" type="text" maxlength="40" placeholder="e.g. Foodland, Target, Longs" required>
+          </div>
+          <fieldset class="style-field">
+            <legend>Breathing style · its color</legend>
+            <div id="newStylePick"></div>
+          </fieldset>
+          <button class="btn primary" type="submit">Add store</button>
+        </form>
+        <div class="store-grid" id="storeGrid"></div>
+      </section>
+
+      <!-- HISTORY -->
+      <section class="view" id="view-history" aria-label="Trip history" hidden>
+        <div class="history-stats" id="historyStats"></div>
+        <div id="historyList"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings" aria-label="Settings" hidden>
+        <div class="card">
+          <h2 class="card-title"><span class="kanji" aria-hidden="true">設</span> Totals</h2>
+          <div class="settings-grid">
+            <div class="field">
+              <label for="taxRate">Sales tax %</label>
+              <input id="taxRate" type="number" inputmode="decimal" min="0" max="25" step="any">
+              <div class="presets">
+                <button type="button" class="chip mini" data-tax="0">No tax</button>
+                <button type="button" class="chip mini" data-tax="4.712">Oʻahu GET 4.712%</button>
+                <button type="button" class="chip mini" data-tax="4.5">Neighbor isles 4.5%</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="budget">Budget per trip</label>
+              <input id="budget" type="number" inputmode="decimal" min="0" step="any" placeholder="Leave blank for no budget">
+            </div>
+            <div class="field">
+              <label for="currency">Currency</label>
+              <select id="currency"></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title"><span class="kanji" aria-hidden="true">藤</span> Look &amp; feel</h2>
+          <label class="switch"><input type="checkbox" id="petalsToggle"><span>Falling wisteria petals</span></label>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title"><span class="kanji" aria-hidden="true">守</span> Your data</h2>
+          <p class="privacy">Everything you enter is saved <strong>only in this browser on this device</strong>. There are no accounts, no servers, no ads and no tracking. Nobody else can see your list, including whoever hosts the site.</p>
+          <p class="privacy">To move your list to another phone or keep a safety copy, use <strong>Export backup</strong>, then <strong>Import backup</strong> on the other device.</p>
+          <div class="btn-row">
+            <button type="button" class="btn" id="exportBtn">Export backup</button>
+            <button type="button" class="btn" id="importBtn">Import backup</button>
+            <button type="button" class="btn ghost" id="persistBtn" hidden>Protect from auto-cleanup</button>
+            <button type="button" class="btn danger" id="eraseBtn">Erase everything</button>
+          </div>
+          <input type="file" id="importFile" accept="application/json,.json" class="sr-only" tabindex="-1" aria-hidden="true">
+          <p class="storage-note" id="storageNote"></p>
+        </div>
+
+        <p class="fine-print">Fan-made and inspired by <em>Demon Slayer</em>. Not affiliated with or endorsed by the creators or publishers. Uses traditional Japanese patterns, no official artwork.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <div class="stamp" id="stamp" aria-hidden="true">滅</div>
+
+  <dialog id="dialog" aria-labelledby="dlgTitle">
+    <h3 id="dlgTitle"></h3>
+    <div id="dlgBody"></div>
+    <div class="dlg-actions">
+      <button type="button" class="btn ghost" id="dlgCancel">Cancel</button>
+      <button type="button" class="btn primary" id="dlgOk">OK</button>
+    </div>
+  </dialog>
+</body>
+</html>
