@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <!-- Security: only this site's own files may run. No inline scripts, no third-party scripts,
-       no network calls except Google Fonts (styles + font files). -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <!-- Security: only this site's own files may load or run. No inline scripts, no third-party
+       scripts, fonts or trackers — the page makes no requests to any other site. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="referrer" content="no-referrer">
-  <meta name="theme-color" content="#0b0d1a">
+  <meta name="theme-color" content="#0a0a0f">
   <meta name="color-scheme" content="dark">
   <meta name="description" content="A Demon Slayer–inspired shopping list and total tracker. Your data stays on your device.">
   <title>Slayer Cart</title>
@@ -17,9 +17,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Slayer Cart">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&display=swap">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
@@ -29,16 +26,9 @@
   <header class="top">
     <a class="brand" href="#/list" aria-label="Slayer Cart home">
       <span class="emblem" aria-hidden="true">滅</span>
-      <span class="brand-text">
-        <span class="title">Slayer Cart</span>
-        <span class="sub"><span lang="ja">鬼殺隊</span> · Supply Run Ledger</span>
-      </span>
-    </a>
-    <a class="privacy-pill" href="#/settings" title="Your data stays on this device">
-      <span class="kanji" aria-hidden="true">守</span> On-device
+      <span class="title">Slayer Cart</span>
     </a>
   </header>
-  <div class="haori-strip" aria-hidden="true"></div>
 
   <div class="wrap">
     <section class="summary" aria-label="Shopping totals">
@@ -71,7 +61,7 @@
       <!-- LIST -->
       <section class="view" id="view-list" aria-label="Shopping list">
         <form class="card add-form" id="addForm" autocomplete="off">
-          <h2 class="card-title"><span class="kanji" aria-hidden="true">壱</span> Add an item</h2>
+          <h2 class="card-title">Add Item</h2>
           <div class="field f-name">
             <label for="addName">Item</label>
             <input id="addName" type="text" maxlength="60" placeholder="e.g. Rice 20 lb" list="itemSuggestions" required>
@@ -93,7 +83,7 @@
             <label for="addStore">Store</label>
             <select id="addStore"></select>
           </div>
-          <button class="btn primary add-btn" type="submit"><span class="kanji" aria-hidden="true">斬</span> Add</button>
+          <button class="btn primary add-btn" type="submit">Add</button>
           <div class="price-memory" id="priceMemory" hidden></div>
         </form>
 
@@ -133,7 +123,7 @@
       <!-- STORES -->
       <section class="view" id="view-stores" aria-label="Stores" hidden>
         <form class="card" id="storeForm" autocomplete="off">
-          <h2 class="card-title"><span class="kanji" aria-hidden="true">店</span> Add a store</h2>
+          <h2 class="card-title">Add Store</h2>
           <div class="field">
             <label for="storeName">Store name</label>
             <input id="storeName" type="text" maxlength="40" placeholder="e.g. Foodland, Target, Longs" required>
@@ -156,7 +146,7 @@
       <!-- SETTINGS -->
       <section class="view" id="view-settings" aria-label="Settings" hidden>
         <div class="card">
-          <h2 class="card-title"><span class="kanji" aria-hidden="true">設</span> Totals</h2>
+          <h2 class="card-title">Totals</h2>
           <div class="settings-grid">
             <div class="field">
               <label for="taxRate">Sales tax %</label>
@@ -179,12 +169,12 @@
         </div>
 
         <div class="card">
-          <h2 class="card-title"><span class="kanji" aria-hidden="true">藤</span> Look &amp; feel</h2>
+          <h2 class="card-title">Appearance</h2>
           <label class="switch"><input type="checkbox" id="petalsToggle"><span>Falling wisteria petals</span></label>
         </div>
 
         <div class="card">
-          <h2 class="card-title"><span class="kanji" aria-hidden="true">守</span> Your data</h2>
+          <h2 class="card-title">Your Data</h2>
           <p class="privacy">Everything you enter is saved <strong>only in this browser on this device</strong>. There are no accounts, no servers, no ads and no tracking. Nobody else can see your list, including whoever hosts the site.</p>
           <p class="privacy">To move your list to another phone or keep a safety copy, use <strong>Export backup</strong>, then <strong>Import backup</strong> on the other device.</p>
           <div class="btn-row">
@@ -197,7 +187,7 @@
           <p class="storage-note" id="storageNote"></p>
         </div>
 
-        <p class="fine-print">Fan-made and inspired by <em>Demon Slayer</em>. Not affiliated with or endorsed by the creators or publishers. Uses traditional Japanese patterns, no official artwork.</p>
+        <p class="fine-print">Fan-made and inspired by <em>Demon Slayer</em>. Not affiliated with or endorsed by the creators or publishers. No official artwork is used.</p>
       </section>
     </main>
   </div>

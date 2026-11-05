@@ -1,6 +1,6 @@
 /* Offline support: network first (so updates show up right away), cached copy when offline.
    Only this site's own files are cached. Bump VERSION when you change CORE. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `slayer-cart-${VERSION}`;
 const CORE = [
   './',

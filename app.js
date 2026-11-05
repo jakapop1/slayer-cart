@@ -110,7 +110,7 @@
   function defaultState() {
     return {
       version: 1,
-      settings: { taxRate: 0, budget: 0, currency: 'USD', petals: true },
+      settings: { taxRate: 0, budget: 0, currency: 'USD', petals: false },
       stores: DEFAULT_STORES.map((s) => ({ ...s })),
       items: [],
       priceBook: Object.create(null),
@@ -138,7 +138,7 @@
       taxRate: Math.round(cleanNum(s.taxRate, 0, 25, 0) * 1000) / 1000,
       budget: cleanPrice(s.budget),
       currency: Object.hasOwn(CURRENCIES, s.currency) ? s.currency : 'USD',
-      petals: s.petals !== false,
+      petals: s.petals === true,
     };
 
     const stores = [];
@@ -460,7 +460,7 @@
   function renderStoreSelect() {
     const sel = $('#addStore');
     const want = findStore(state.ui.lastStore) ? state.ui.lastStore : state.stores[0].id;
-    sel.replaceChildren(...state.stores.map((s) => h('option', { value: s.id, text: `${s.name}  ·  ${styleOf(s.style).kanji}` })));
+    sel.replaceChildren(...state.stores.map((s) => h('option', { value: s.id, text: s.name })));
     sel.value = want;
     sel.style.setProperty('--c', styleOf(findStore(want).style).color);
   }
